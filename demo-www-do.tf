@@ -25,4 +25,24 @@ resource "digitalocean_droplet" "demo-www" {
       "sudo apt-get -y install nginx"
     ]
   }
+
+  provisioner "file" {
+    source = "www/do.html"
+    destination = "/usr/share/nginx/html/index.html"
+  }
+}
+
+# Add a record to the domain
+resource "digitalocean_record" "nerdearla-do" {
+  domain = "fredrikson.com.ar"
+  type = "A"
+  name = "nerdearla-do"
+  value = "${digitalocean_droplet.demo-www.ipv4_address}"
+}
+
+resource "digitalocean_record" "nerdearla-aws" {
+  domain = "fredrikson.com.ar"
+  type = "A"
+  name = "nerdearla-aws"
+  value = "${aws_instance.demo-aws.public_ip}"
 }
